@@ -42,12 +42,31 @@ export default class App extends Component {
     console.log('Button was Pressed!!');
   }
 
+  loginWithTwitterComponent = () => {
+    return(
+      <View style={viewStyles.twitterLoginViewStyle}>
+        <Image
+          source={require('./src/images/icons/twitter_bird.png')}
+          style={viewStyles.twitterIcon}
+          resizeMode={'contain'}
+          />
+          <TappableText
+            textStyle={[textStyles.forgottenLogin, textStyles.forgottenLoginBold, textStyles.twitterLogin]}
+            textTapped={ () => Linking.openURL(urls.twitterLogin)}
+            >
+              Log In With Twitter
+            </TappableText>
+          </View>
+    );
+  }
+
 
   loginScreenComponent = () => {
     return (
       <ImageBackground
         source={require('./src/images/Orange-Fun.jpg')}
-        resizeMode={'cover'} style={viewStyles.container}
+        resizeMode={'cover'}
+        style={viewStyles.container}
       >
 
 
@@ -101,6 +120,8 @@ export default class App extends Component {
             <View style={viewStyles.orSeparatorLine}/>
           </View>
 
+          {this.loginWithTwitterComponent()}
+
         </ScrollView>
 
       </ImageBackground>
@@ -150,7 +171,7 @@ const viewStyles = {
   },
   facebookButtonTouchableHighlightStyle: {
     marginTop: 20,
-    marginBottom: 10
+    marginBottom: 5
   },
   forgottenLoginEncapsulationView: {
     flexDirection: 'row',
@@ -175,6 +196,18 @@ const viewStyles = {
     borderWidth: 0.5,
     marginHorizontal: 5
   },
+  twitterLoginViewStyle:{
+    flexDirection: 'row',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center'
+
+  },
+  twitterIcon: {
+    width: 17,
+    height: 17,
+    marginHorizontal: 4
+  }
 
 };
 
@@ -192,6 +225,9 @@ const textStyles = {
     color: 'white',
     backgroundColor: 'transparent',
     fontWeight: 'bold',
+    fontSize: 13
+  },
+  twitterLogin: {
     fontSize: 13
   }
 
