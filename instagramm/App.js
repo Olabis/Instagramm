@@ -1,7 +1,10 @@
 import React, {Component} from 'react';
 import { Text, View, Image, ImageBackground, StatusBar, ScrollView } from 'react-native';
 import LoginButton from './src/components/LoginButton';
+import Dimensions from 'Dimensions';
 
+const windowSize = Dimensions.get('window');
+const standardComponentWidth = windowSize.width * 0.82
 
 const color = {
   facebook: 'rgb(59, 88, 152)',
@@ -13,7 +16,7 @@ const color = {
 const loginButtonInfo = {
   height: 45,
   pageFontSize: 11,
-  borderWeight: 0.8,
+  borderWidth: 0.8,
   borderRadius: 5
 }
 
@@ -33,8 +36,8 @@ export default class App extends Component {
     super(props);
   }
 
-  loginBottonPressed = () =>{
-    console.log ('Button was Pressed!!');
+  loginButtonPressed = () => {
+    console.log('Button was Pressed!!');
   }
 
 
@@ -46,29 +49,40 @@ export default class App extends Component {
       >
 
 
-      <StatusBar
-        backgroundColor='blue'
-        barStyle='light-content'
-      />
-
-      <ScrollView>
-
-        <Image
-          source={require('./src/images/instagram-text-logo.png')}
-          style={viewStyles.instagramTextLogo}
-          resizeMode={'contain'}
+        <StatusBar
+          backgroundColor='blue'
+          barStyle='light-content'
         />
 
-        <LoginButton
-          buttonViewStyle={viewStyles.instagramLoginBottonView}
-          buttonTextStyle={{color: color.text, fontWeight: '500'}}
-          bottonTapped={this.loginBottonPressed}
-          activeOpacity={0.75}
-        >
-          Log In
-        </LoginButton>
+        <ScrollView>
 
-      </ScrollView>
+          <Image
+            source={require('./src/images/instagram-text-logo.png')}
+            style={viewStyles.instagramTextLogo}
+            resizeMode={'contain'}
+          />
+
+          <LoginButton
+            buttonViewStyle={viewStyles.instagramLoginButtonView}
+            buttonTextStyle={{color: color.text, fontWeight: '500'}}
+            buttonTapped={this.loginButtonPressed}
+            touchableHighlightStyle={viewStyles.instagramButtonTouchableHighlightStyle}
+            activeOpacity={0.75}
+          >
+            Log In (Via instagram)
+          </LoginButton>
+
+          <LoginButton
+            buttonViewStyle={[viewStyles.instagramLoginButtonView, viewStyles.facebookLoginButtonView]}
+            buttonTextStyle={{color: color.text, fontWeight: '500'}}
+            buttonTapped={this.loginButtonPressed}
+            touchableHighlightStyle={[viewStyles.instagramButtonTouchableHighlightStyle, viewStyles.facebookButtonTouchableHighlightStyle]}
+            activeOpacity={0.75}
+          >
+            Facebook login
+          </LoginButton>
+
+        </ScrollView>
 
       </ImageBackground>
     );
@@ -89,21 +103,37 @@ const viewStyles = {
     alignItems: 'center',
   },
   instagramTextLogo:{
-    width: 160,
-    height: 90,
-    marginTop: '65%',
-    marginBottom: 30
+    width: 150,
+    height: 80,
+    marginTop: '40%',
+    marginBottom: 25,
+    alignSelf: 'center'
   },
-  instagramLoginBottonView: {
+  instagramLoginButtonView: {
     backgroundColor: 'transparent',
     borderColor: color.instagramButtonBorderColor,
     borderWidth: loginButtonInfo.borderWidth,
     borderRadius: loginButtonInfo.borderRadius,
-    width: '80%',
+    width: standardComponentWidth,
     height: loginButtonInfo.height,
     justifyContent: 'center',
     alignItems: 'center'
+  },
+  instagramButtonTouchableHighlightStyle: {
+    backgroundColor: 'transparent',
+    width: standardComponentWidth,
+    height: loginButtonInfo.height,
+    marginTop: 5
+  },
+  facebookLoginButtonView: {
+    backgroundColor: color.facebook
+
+  },
+  facebookButtonTouchableHighlightStyle: {
+    marginTop: 20,
+    marginBottom: 10
   }
+
 };
 
 const textStyles = {
