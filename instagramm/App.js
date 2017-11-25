@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import { Text, View, Image, ImageBackground, StatusBar, ScrollView, Linking, WebView } from 'react-native';
 import LoginButton from './src/components/LoginButton';
 import TappableText from './src/components/TappableText';
+import InstaNavigationBar from './src/components/InstaNavigationBar';
 import Dimensions from 'Dimensions';
 
 
@@ -87,12 +88,10 @@ export default class App extends Component {
 
   instagramFeedScreenComponent = () => {
     return(
-      <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-        <Text>Congratulations Youve Logged On</Text>
-        <Text>{this.state.accessToken}</Text>
+      <View style={{flex: 1}}>
+        <InstaNavigationBar/>
       </View>
-    )
-
+    );
   }
   loginWithTwitterComponent = () => {
     return(
