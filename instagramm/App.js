@@ -68,7 +68,7 @@ export default class App extends Component {
         var foundAccessToken = webViewState.url.substr(startIndexOfAccessToken);
 
       //  console.log('My Access Token = ' + foundAccessToken);
-      this.setState({accessToken: foundAccessToken, displayAuthenticationWebView: false});
+      this.setState({accessToken: foundAccessToken});
 
       }
 
@@ -85,6 +85,15 @@ export default class App extends Component {
     );
   }
 
+  instagramFeedScreenComponent = () => {
+    return(
+      <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+        <Text>Congratulations Youve Logged On</Text>
+        <Text>{this.state.accessToken}</Text>
+      </View>
+    )
+
+  }
   loginWithTwitterComponent = () => {
     return(
       <View style={viewStyles.twitterLoginViewStyle}>
@@ -117,6 +126,7 @@ export default class App extends Component {
     );
 
   }
+
 
 
   loginScreenComponent = () => {
@@ -190,14 +200,25 @@ export default class App extends Component {
   }
 
   render() {
-    if (this.state.displayAuthenticationWebView == true){
-      return(
-        this.authenticationWebViewComponent()
-      );
-    }
-    else {
+
+    var hasSuccessfullyLoggedIn = (this.state.accessToken.length > 1);
+    var shouldDisplayLoginScreen = (this.state.displayAuthenticationWebView == false && this.state.accessToken.length < 1)
+    console.log('this.state.displayAuthenticationWebView=' + this.displayAuthenticationWebView);
+
+    if( shouldDisplayLoginScreen){
       return (
         this.loginScreenComponent()
+      );
+    }
+    else if(hasSuccessfullyLoggedIn){
+      return(
+      this.instagramFeedScreenComponent()
+
+      );
+    }
+    else if (this.state.displayAuthenticationWebView == true){
+      return(
+        this.authenticationWebViewComponent()
       );
     }
 
