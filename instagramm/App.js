@@ -1,10 +1,11 @@
 import React, {Component} from 'react';
-import { Text, View, Image, ImageBackground, StatusBar, ScrollView, Linking, WebView } from 'react-native';
+import { Text, View, Image, ImageBackground, StatusBar, ScrollView, Linking, WebView, FlatList } from 'react-native';
 import LoginButton from './src/components/LoginButton';
 import TappableText from './src/components/TappableText';
 import InstaNavigationBar from './src/components/InstaNavigationBar';
 import Dimensions from 'Dimensions';
 import NetworkManager from './src/model/NetworkManager';
+import InstaFeedCell from './src/components/InstaFeedCell';
 
 
 const windowSize = Dimensions.get('window');
@@ -72,6 +73,8 @@ export default class App extends Component {
         //make a network call to
         this.apiManager = new NetworkManager(foundAccessToken);
         this.apiManager.getSessionAndFeedData(  (userData) => {
+          this.userData = userData;
+          this.feedData = feedData;
           console.log(userData);
         }, (feedData) => {
           console.log(feedData);
@@ -98,6 +101,12 @@ export default class App extends Component {
     return(
       <View style={{flex: 1}}>
         <InstaNavigationBar/>
+        <FlatList
+        data={this.feedData}
+        renderItem={ ({item}) => <InstaFeedCell cellData={item}/> }
+        keyExtractor={item => item.id}
+
+        />
       </View>
     );
   }
