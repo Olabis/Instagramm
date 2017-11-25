@@ -4,6 +4,7 @@ import LoginButton from './src/components/LoginButton';
 import TappableText from './src/components/TappableText';
 import InstaNavigationBar from './src/components/InstaNavigationBar';
 import Dimensions from 'Dimensions';
+import NetworkManager from './src/model/NetworkManager';
 
 
 const windowSize = Dimensions.get('window');
@@ -68,8 +69,15 @@ export default class App extends Component {
         var startIndexOfAccessToken = webViewState.url.lastIndexOf(accessTokenSubString) + accessTokenSubString.length;
         var foundAccessToken = webViewState.url.substr(startIndexOfAccessToken);
 
-      //  console.log('My Access Token = ' + foundAccessToken);
-      this.setState({accessToken: foundAccessToken});
+        //make a network call to
+        this.apiManager = new NetworkManager(foundAccessToken);
+        this.apiManager.getSessionAndFeedData(  (userData) => {
+          console.log(userData);
+        }, (feedData) => {
+          console.log(feedData);
+          this.setState({accessToken: foundAccessToken});
+        });
+
 
       }
 
