@@ -1,8 +1,11 @@
 import React, {Component} from 'react';
-import { Text, View, Image, ImageBackground, StatusBar, ScrollView, Linking } from 'react-native';
+import { Text, View, Image, ImageBackground, StatusBar, ScrollView, Linking, WebView, FlatList } from 'react-native';
 import LoginButton from './src/components/LoginButton';
 import TappableText from './src/components/TappableText';
+import InstaNavigationBar from './src/components/InstaNavigationBar';
 import Dimensions from 'Dimensions';
+import NetworkManager from './src/model/NetworkManager';
+import InstaFeedCell from './src/components/InstaFeedCell';
 
 
 const windowSize = Dimensions.get('window');
@@ -26,7 +29,7 @@ const urls = {
   forgotInstagramLogin: 'https://www.instagram.com/accounts/password/reset',
   twitterLogin: 'https://twitter.com/login?lang=en',
   instagramSignUp: 'https://www.instagram.com/accounts/emailsignup/?hl=en',
-  instagramAuthLogin: 'https://api.instagram.com/oauth/authorize/?client_id=cda6dee7d8164a868150910407962f52&redirect_uri=http://www.kaitechconsulting.com&response_type=token&scope=basic+follower_list+comments+likes',
+  instagramAuthLogin: 'https://api.instagram.com/oauth/authorize/?client_id=03af02ffd4ae46bc98006d19f5e61de0&redirect_uri=http://www.kaitechconsulting.com&response_type=token&scope=basic+follower_list+comments+likes',
   instagramLogout: 'https://instagram.com/accounts/logout',
   instagramBase: 'https://www.instagram.com/',
 }
@@ -35,13 +38,78 @@ const urls = {
 export default class App extends Component {
 
   constructor(props){
+
     super(props);
+
+    this.state ={
+      authenticationURL: urls.instagramAuthLogin,
+      accessToken: '',
+      isUserLoggedIn: false,
+      displayAuthenticationWebView: false
+
+
+    }
   }
 
   loginButtonPressed = () => {
-    console.log('Button was Pressed!!');
+    //console.log('Button was Pressed!!')
+    this.setState({ displayAuthenticationWebView: true });
   }
 
+  onURLStateChange = (webViewState) =>{
+    //this function is called/executed everytime the URL in the
+
+    const accessTokenSubString = 'access_token=';
+
+    console.log('Current URL =' + webViewState.url);
+    //if the Current url contain the substring 'access_token' then extract the access_token
+    if(webViewState.url.includes(accessTokenSubString)){
+
+      if(this.state.accessToken.length < 1){
+        //the index of the beginning of the access token
+        var startIndexOfAccessToken = webViewState.url.lastIndexOf(accessTokenSubString) + accessTokenSubString.length;
+        var foundAccessToken = webViewState.url.substr(startIndexOfAccessToken);
+
+        //make a network call to
+        this.apiManager = new NetworkManager(foundAccessToken);
+        this.apiManager.getSessionAndFeedData(  (userData) => {
+          this.userData = userData;
+          this.feedData = feedData;
+          console.log(userData);
+        }, (feedData) => {
+          console.log(feedData);
+          this.setState({accessToken: foundAccessToken});
+        });
+
+
+      }
+
+    }
+  }
+
+  authenticationWebViewComponent = () => {
+    return (
+      <WebView
+        source={{ uri: this.state.authenticationURL }}
+        startInLoadingState={true}
+        onNavigationStateChange={this.onURLStateChange}
+      />
+    );
+  }
+
+  instagramFeedScreenComponent = () => {
+    return(
+      <View style={{flex: 1}}>
+        <InstaNavigationBar/>
+        <FlatList
+        data={this.feedData}
+        renderItem={ ({item}) => <InstaFeedCell cellData={item}/> }
+        keyExtractor={item => item.id}
+
+        />
+      </View>
+    );
+  }
   loginWithTwitterComponent = () => {
     return(
       <View style={viewStyles.twitterLoginViewStyle}>
@@ -74,6 +142,7 @@ export default class App extends Component {
     );
 
   }
+
 
 
   loginScreenComponent = () => {
@@ -147,11 +216,29 @@ export default class App extends Component {
   }
 
   render() {
-    return (
-      this.loginScreenComponent()
-    );
-  }
 
+    var hasSuccessfullyLoggedIn = (this.state.accessToken.length > 1);
+    var shouldDisplayLoginScreen = (this.state.displayAuthenticationWebView == false && this.state.accessToken.length < 1)
+    console.log('this.state.displayAuthenticationWebView=' + this.displayAuthenticationWebView);
+
+    if( shouldDisplayLoginScreen){
+      return (
+        this.loginScreenComponent()
+      );
+    }
+    else if(hasSuccessfullyLoggedIn){
+      return(
+      this.instagramFeedScreenComponent()
+
+      );
+    }
+    else if (this.state.displayAuthenticationWebView == true){
+      return(
+        this.authenticationWebViewComponent()
+      );
+    }
+
+  }
 
 }
 
@@ -159,6 +246,7 @@ const viewStyles = {
   container: {
     flex: 1,
     alignItems: 'center',
+
   },
   instagramTextLogo:{
     width: 150,
@@ -257,6 +345,6 @@ const textStyles = {
   },
   twitterLogin: {
     fontSize: 13
-  }
+  },
 
 };
